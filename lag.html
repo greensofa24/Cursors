@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Laggy Cursor</title>
+<style>
+* {
+cursor: none;
+}
+</style>
+</head>
+<body>
+
+<script>
+var thing;
+
+document.addEventListener("mousemove", (event) => {
+thing = event;
+});
+
+function makecursor() {
+document.body.innerHTML = "";
+let cursor = document.createElement("img");
+cursor.src = "https://pngimg.com/d/cursor_PNG100720.png";
+cursor.width = 16;
+cursor.height = 24;
+cursor.style.position = "absolute";
+cursor.style.left = thing.offsetX + "px";
+cursor.style.top = thing.offsetY + "px";
+document.body.appendChild(cursor);
+}
+
+setInterval(makecursor, 100);
+</script>
+
+</body>
+</html>

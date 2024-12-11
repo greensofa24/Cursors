@@ -10,15 +10,49 @@ cursor: none;
 </head>
 <body>
 
+<div id="cursor" width=16 height=24 style="position:absolute;"></div>
+<div id="alt"></div>
+<label>Delay between cursor update (ms)</label>
+<br>
+<input value=150 id="input" oninput="document.getElementById('output').value = this.value;
+clearInterval(cursormake);
+cursormake = setInterval(makecursor, this.value);">
+<label>Delay: </label><output id="output">150</output>
+
 <script>
 var thing;
+
+var detectOverlap = (function () {
+    function getPositions(elem) {
+        var pos = elem.getBoundingClientRect();
+        return [[pos.left, pos.right], [pos.top, pos.bottom]];
+    }
+
+    function comparePositions(p1, p2) {
+        var r1, r2;
+        if (p1[0] < p2[0]) {
+          r1 = p1;
+          r2 = p2;
+        } else {
+          r1 = p2;
+          r2 = p1;
+        }
+        return r1[1] > r2[0] || r1[0] === r2[0];
+    }
+
+    return function (a, b) {
+        var pos1 = getPositions(a),
+            pos2 = getPositions(b);
+        return comparePositions(pos1[0], pos2[0]) && comparePositions(pos1[1], pos2[1]);
+    };
+})();
 
 document.addEventListener("mousemove", (event) => {
 thing = event;
 });
 
 function makecursor() {
-document.body.innerHTML = "";
+document.getElementById("cursor").innerHTML = "";
 let cursor = document.createElement("img");
 cursor.src = "https://pngimg.com/d/cursor_PNG100720.png";
 cursor.width = 16;
@@ -26,10 +60,14 @@ cursor.height = 24;
 cursor.style.position = "absolute";
 cursor.style.left = thing.offsetX + "px";
 cursor.style.top = thing.offsetY + "px";
-document.body.appendChild(cursor);
+document.getElementById("alt").style.left = thing.offsetX + "px";
+document.getElementById("alt").style.top = thing.offsetY + "px";
+document.getElementById("cursor").appendChild(cursor);
 }
 
-setInterval(makecursor, 100);
+var cursormake = setInterval(makecursor, 150);
+
+document.getElementById("input").addEventListener("click", function(){if(detectOverlap(document.getElementById("cursor"), document.getElementById("alt"))){document.getElementById("input").focus()} else {document.getElementById("input").blur()}})
 </script>
 
 </body>
